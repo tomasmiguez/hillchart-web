@@ -1,0 +1,44 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/hill-chart@latest/dist/styles.css"
+  />
+  <script src="https://unpkg.com/hill-chart@latest/dist/hill-chart.umd.js"></script>
+  <script type="module">
+    const data = [
+      {
+        id: '3',
+        color: 'red',
+        description: 'Late af task',
+        size: 10,
+        x: 12.069770990416055,
+        link: '/fired.html',
+      },
+
+      {
+        id: '1',
+        color: 'yellow',
+        description: 'Gettin there',
+        size: 10,
+        x: 55.11627906976744,
+      },
+      {
+        id: '2',
+        color: 'green',
+        description: 'Hell yeah!',
+        size: 10,
+        x: 100,
+      },
+    ];
+
+    const hill = new HillChart(data);
+    hill.render();
+  </script>
+</head>
+<body>
+  <svg class="hill-chart" />
+</body>
+</html>
+
