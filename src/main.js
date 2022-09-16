@@ -1,6 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import Hillchart from './components/Hillchart.vue'
 
 import './assets/main.css'
 
-createApp(App).mount('#app')
+const app = createApp(Hillchart);
+
+app.config.errorHandler = (err) => {
+  alert(JSON.stringify(err));
+};
+
+app.mount('#app');
