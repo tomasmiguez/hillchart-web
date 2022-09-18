@@ -6,6 +6,8 @@ import HillChart from 'hill-chart';
 
 const axios = inject('axios');
 
+const props = defineProps(['frame', 'scopes']);
+
 function persistMovement(data) {
   const body = { position: data.x };
   axios.patch(`frame-scopes/${data.id}`, body)
@@ -14,13 +16,10 @@ function persistMovement(data) {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/hillcharts/10');
-    const frame = response.data.data.frames[0];
-    const scopes = response.data.data.scopes;
-    const data = frame.frameScopes.map(frameScope =>
+    const data = props.frame.frameScopes.map(frameScope =>
       ({
         id: frameScope.id,
-        color: scopes.find(scope => scope.id === frameScope.scopeId).color,
+        color: props.scopes.find(scope => scope.id === frameScope.scopeId).color,
         description: frameScope.title,
         size: 10,
         x: frameScope.position,
