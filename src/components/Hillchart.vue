@@ -48,7 +48,8 @@
 </script>
 
 <template>
-  <div v-if="hillchart">
+  <div :style="{'width': 'fit-content'}" v-if="hillchart">
+    <h3>{{ hillchart.name }}</h3>
     <div>
       <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
       <button :disabled="currentFrameIndex === 0" @click="previousFrame">&lt;</button>
@@ -58,3 +59,9 @@
   </div>
   <p v-else>LOADING...</p>
 </template>
+
+<style>
+h3 {
+  text-align: center;
+}
+</style>
