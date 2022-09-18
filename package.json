@@ -7,6 +7,8 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "axios-case-converter": "^0.9.0",
     "hill-chart": "^1.4.0",
     "vue": "^3.2.38"
   },
