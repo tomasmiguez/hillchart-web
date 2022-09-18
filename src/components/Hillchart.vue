@@ -28,8 +28,8 @@
 
 <template>
   <div v-if="hillchart">
-    <div v-for="(frame, index) in hillchart.frames" :key="frame.id">
-      <button @click="currentFrameId=frame.id">{{ index+1 }}</button>
+    <div>
+      <button v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameId=frame.id">{{ index+1 }}</button>
     </div>
     <Frame v-if="currentFrame" :frame="currentFrame" :scopes="hillchart.scopes" />
   </div>
