@@ -1,5 +1,5 @@
 <script setup>
-  import { inject, ref, computed, watch } from 'vue';
+  import { inject, ref, computed, watch, onBeforeMount } from 'vue';
 
   import Frame from './Frame.vue';
 
@@ -9,21 +9,27 @@
   const currentFrameId = ref(null);
   const currentFrame = ref(null);
 
-  function getHillchart() {
-    axios.get('hillcharts/10')
-      .then(response => {
-        hillchart.value = response.data.data;
-      })
-      .catch(error => console.log(error));
+  async function getHillchart() {
+    try {
+      const response = await axios.get('hillcharts/10')
+      hillchart.value = response.data.data;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  getHillchart();
+  onBeforeMount(async () => {
+    await getHillchart();
 
-  watch(currentFrameId, () => {
+    currentFrame.value = hillchart.value.frames[hillchart.value.frames.length - 1];
+    currentFrameId.value = currentFrame.value.id;
+  });
+
+  watch(currentFrameId, async () => {
     currentFrame.value = null;
-    getHillchart();
+    await getHillchart();
     currentFrame.value = hillchart.value.frames.find(frame => frame.id === currentFrameId.value);
-  })
+  });
 </script>
 
 <template>
