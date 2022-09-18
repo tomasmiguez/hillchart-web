@@ -6,7 +6,7 @@
   const axios = inject('axios');
 
   const hillchart = ref(null);
-  const currentFrameId = ref(null);
+  const currentFrameIndex = ref(null);
   const currentFrame = ref(null);
 
   async function getHillchart() {
@@ -18,24 +18,41 @@
     }
   };
 
+  function previousFrame() {
+    if(currentFrameIndex.value > 0) {
+      currentFrameIndex.value--;
+      currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
+    }
+  };
+
+  function nextFrame() {
+    if(currentFrameIndex.value < hillchart.value.frames.length - 1) {
+      currentFrameIndex.value++;
+      currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
+    }
+  };
+
   onBeforeMount(async () => {
     await getHillchart();
 
-    currentFrame.value = hillchart.value.frames[hillchart.value.frames.length - 1];
-    currentFrameId.value = currentFrame.value.id;
+    currentFrameIndex.value = hillchart.value.frames.length - 1;
+    currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
   });
 
-  watch(currentFrameId, async () => {
+
+  watch(currentFrameIndex, async () => {
     currentFrame.value = null;
     await getHillchart();
-    currentFrame.value = hillchart.value.frames.find(frame => frame.id === currentFrameId.value);
+    currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
   });
 </script>
 
 <template>
   <div v-if="hillchart">
     <div>
-      <button v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameId=frame.id">{{ index+1 }}</button>
+      <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
+      <button :disabled="currentFrameIndex === 0" @click="previousFrame">&lt;</button>
+      <button :disabled="currentFrameIndex === hillchart.frames.length - 1" @click="nextFrame">&gt;</button>
     </div>
     <Frame v-if="currentFrame" :frame="currentFrame" :scopes="hillchart.scopes" />
   </div>
