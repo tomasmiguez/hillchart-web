@@ -32,6 +32,29 @@
     }
   };
 
+  async function newFrame() {
+    try {
+      const tmpFrame = currentFrame.value;
+      currentFrame.value = null;
+      const response = await axios.post('/frames', { hillchartId: hillchart.value.id });
+      const newFrame = response.data.data;
+      for(const frameScope of tmpFrame.frameScopes) {
+        const body = {
+          title: frameScope.title,
+          position: frameScope.position,
+          frameId: newFrame.id,
+          scopeId: frameScope.scopeId
+        }
+        console.log(body);
+        await axios.post('/frame-scopes', body);
+      };
+      await getHillchart();
+      currentFrameIndex.value = hillchart.value.frames.length - 1;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   onBeforeMount(async () => {
     await getHillchart();
 
@@ -50,12 +73,13 @@
 <template>
   <div :style="{'width': 'fit-content'}" v-if="hillchart">
     <h3>{{ hillchart.name }}</h3>
+    <Frame v-if="currentFrame" :frame="currentFrame" :scopes="hillchart.scopes" />
     <div>
       <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
       <button :disabled="currentFrameIndex === 0" @click="previousFrame">&lt;</button>
       <button :disabled="currentFrameIndex === hillchart.frames.length - 1" @click="nextFrame">&gt;</button>
+      <button @click="newFrame">+</button>
     </div>
-    <Frame v-if="currentFrame" :frame="currentFrame" :scopes="hillchart.scopes" />
   </div>
   <p v-else>LOADING...</p>
 </template>
