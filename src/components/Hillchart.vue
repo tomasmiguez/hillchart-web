@@ -2,6 +2,7 @@
   import { inject, ref, computed, watch, onBeforeMount } from 'vue';
 
   import Frame from './Frame.vue';
+  import Scopes from './Scopes.vue';
 
   const axios = inject('axios');
 
@@ -73,12 +74,15 @@
 <template>
   <div :style="{'width': 'fit-content'}" v-if="hillchart">
     <h3>{{ hillchart.name }}</h3>
-    <Frame v-if="currentFrame" :frame="currentFrame" :scopes="hillchart.scopes" />
-    <div>
-      <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
-      <button :disabled="currentFrameIndex === 0" @click="previousFrame">&lt;</button>
-      <button :disabled="currentFrameIndex === hillchart.frames.length - 1" @click="nextFrame">&gt;</button>
-      <button @click="newFrame">+</button>
+    <div v-if="currentFrame">
+      <Frame :frame="currentFrame" :scopes="hillchart.scopes" />
+      <div>
+        <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
+        <button :disabled="currentFrameIndex === 0" @click="previousFrame">&lt;</button>
+        <button :disabled="currentFrameIndex === hillchart.frames.length - 1" @click="nextFrame">&gt;</button>
+        <button @click="newFrame">+</button>
+      </div>
+      <Scopes :frame="currentFrame" :scopes="hillchart.scopes" />
     </div>
   </div>
   <p v-else>LOADING...</p>
