@@ -1,43 +1,38 @@
 <script setup>
-  import { inject, ref, computed, watch, onBeforeMount } from 'vue';
+  import { inject, ref, computed, watch, onBeforeMount, provide } from 'vue';
 
   import Frame from './Frame.vue';
   import Scopes from './Scopes.vue';
 
   const axios = inject('axios');
 
-  const hillchart = ref(null);
+  const scopes = ref(null);
+  const frames = ref(null);
+  const name = ref(null);
+  const id = ref(null);
   const currentFrameIndex = ref(null);
-  const currentFrame = ref(null);
+  const currentFrame = computed(() => {
+    return currentFrameIndex.value !== null ? frames.value[currentFrameIndex.value] : null;
+  });
 
   async function getHillchart() {
     try {
       const response = await axios.get('hillcharts/10')
-      hillchart.value = response.data.data;
+      const hillchart = response.data.data;
+      scopes.value = hillchart.scopes;
+      frames.value = hillchart.frames;
+      name.value = hillchart.name;
+      id.value = hillchart.id;
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  function previousFrame() {
-    if(currentFrameIndex.value > 0) {
-      currentFrameIndex.value--;
-      currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
-    }
-  };
-
-  function nextFrame() {
-    if(currentFrameIndex.value < hillchart.value.frames.length - 1) {
-      currentFrameIndex.value++;
-      currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
     }
   };
 
   async function newFrame() {
     try {
       const tmpFrame = currentFrame.value;
-      currentFrame.value = null;
-      const response = await axios.post('/frames', { hillchartId: hillchart.value.id });
+      currentFrameIndex.value = null;
+      const response = await axios.post('/frames', { hillchartId: id.value });
       const newFrame = response.data.data;
       for(const frameScope of tmpFrame.frameScopes) {
         const body = {
@@ -50,7 +45,7 @@
         await axios.post('/frame-scopes', body);
       };
       await getHillchart();
-      currentFrameIndex.value = hillchart.value.frames.length - 1;
+      currentFrameIndex.value = frames.value.length - 1;
     } catch (error) {
       console.log(error);
     }
@@ -59,37 +54,33 @@
   onBeforeMount(async () => {
     await getHillchart();
 
-    currentFrameIndex.value = hillchart.value.frames.length - 1;
-    currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
+    currentFrameIndex.value = frames.value.length - 1;
   });
 
-
-  watch(currentFrameIndex, async () => {
-    currentFrame.value = null;
-    await getHillchart();
-    currentFrame.value = hillchart.value.frames[currentFrameIndex.value];
-  });
+  /* watch(currentFrameIndex, async () => { */
+  /*   await getHillchart(); */
+  /* }); */
 </script>
 
 <template>
-  <div :style="{'width': 'fit-content'}" v-if="hillchart">
-    <h3>{{ hillchart.name }}</h3>
+  <div :style="{'width': 'fit-content'}" v-if="id">
+    <h3>{{ name }}</h3>
     <div v-if="currentFrame">
-      <Frame :frame="currentFrame" :scopes="hillchart.scopes" />
+      <Frame @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
       <div>
-        <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in hillchart.frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
-        <button :disabled="currentFrameIndex === 0" @click="previousFrame">&lt;</button>
-        <button :disabled="currentFrameIndex === hillchart.frames.length - 1" @click="nextFrame">&gt;</button>
+        <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
+        <button :disabled="currentFrameIndex === 0" @click="currentFrameIndex--">&lt;</button>
+        <button :disabled="currentFrameIndex === frames.length - 1" @click="currentFrameIndex++">&gt;</button>
         <button @click="newFrame">+</button>
       </div>
-      <Scopes :frame="currentFrame" :scopes="hillchart.scopes" />
+      <Scopes @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
     </div>
   </div>
   <p v-else>LOADING...</p>
 </template>
 
 <style>
-h3 {
-  text-align: center;
-}
+  h3 {
+    text-align: center;
+  }
 </style>

@@ -1,53 +1,57 @@
 <script setup>
-import { onMounted, inject, watch, ref } from 'vue';
+  import { onMounted, inject, watch, ref } from 'vue';
 
-import 'hill-chart/dist/styles.css';
-import HillChart from 'hill-chart';
+  import 'hill-chart/dist/styles.css';
+  import HillChart from 'hill-chart';
 
-const axios = inject('axios');
+  const axios = inject('axios');
 
-const props = defineProps(['frame', 'scopes']);
+  const props = defineProps(['frame', 'scopes']);
 
-const svg = ref(null)
+  const emit = defineEmits(['hillchartModified']);
 
-function persistMovement(data) {
-  const body = { position: data.x };
-  axios.patch(`frame-scopes/${data.id}`, body)
-    .catch(error => console.log(error));
-};
+  const svg = ref(null)
 
-function renderHillchart() {
-  const data = props.frame.frameScopes.map(frameScope =>
-    ({
-      id: frameScope.id,
-      color: props.scopes.find(scope => scope.id === frameScope.scopeId).color,
-      description: frameScope.title,
-      size: 10,
-      x: frameScope.position,
-    })
-  );
+  async function persistMovement(data) {
+    const body = { position: data.x };
+    await axios.patch(`frame-scopes/${data.id}`, body)
+      .catch(error => console.log(error));
 
-  const config = {
-    target: '#hillchart',
-    width: 700,
-    height: 270,
-    preview: false,
+    emit('hillchartModified');
   };
 
-  svg.value.innerHTML = '';
+  function renderHillchart() {
+    const data = props.frame.frameScopes.map(frameScope =>
+      ({
+        id: frameScope.id,
+        color: props.scopes.find(scope => scope.id === frameScope.scopeId).color,
+        description: frameScope.title,
+        size: 10,
+        x: frameScope.position,
+      })
+    );
 
-  const hill = new HillChart(data, config);
+    const config = {
+      target: '#hillchart',
+      width: 700,
+      height: 270,
+      preview: false,
+    };
 
-  hill.render();
+    svg.value.innerHTML = '';
 
-  hill.on('moved', persistMovement);
-};
+    const hill = new HillChart(data, config);
 
-watch(props, renderHillchart);
+    hill.render();
 
-onMounted(() => {
-  renderHillchart();
-});
+    hill.on('moved', persistMovement);
+  };
+
+  watch(props, renderHillchart);
+
+  onMounted(() => {
+    renderHillchart();
+  });
 </script>
 
 <template>
