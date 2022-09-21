@@ -56,10 +56,6 @@
 
     currentFrameIndex.value = frames.value.length - 1;
   });
-
-  /* watch(currentFrameIndex, async () => { */
-  /*   await getHillchart(); */
-  /* }); */
 </script>
 
 <template>

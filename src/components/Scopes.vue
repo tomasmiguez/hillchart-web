@@ -26,9 +26,12 @@
         frameId: props.frame.id,
         scopeId: createScopeRes.data.data.id
       };
+      // TODO should create in every previous frame
       await axios.post('/frame-scopes', createFrameScopeBody);
 
       emit('hillchartModified');
+
+      newScopeTitle.value = '';
     } catch (error) {
       console.log(error);
     }
