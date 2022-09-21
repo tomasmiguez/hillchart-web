@@ -13,8 +13,10 @@
 
   const newScopeTitle = ref('');
 
-  async function newScope() {
+  async function newScope(e) {
     try {
+      e.preventDefault();
+
       const createScopeBody = {
         hillchartId: props.frame.hillchartId,
         color: randomHexColor()
@@ -48,7 +50,10 @@
       <p class="dot" :style="{ backgroundColor: scopeById(frameScope.scopeId).color }"></p><p style="display: inline-table; margin-left: 1em">{{ frameScope.title }}</p>
     </li>
     <li>
-    <input v-model="newScopeTitle"> <button :disabled="newScopeTitle===''" @click="newScope">+</button>
+      <form id="add">
+        <input v-model="newScopeTitle">
+        <button :disabled="newScopeTitle===''" @click="newScope">+</button>
+      </form>
     </li>
   </ul>
 </template>

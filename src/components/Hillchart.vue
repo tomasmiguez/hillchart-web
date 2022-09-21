@@ -61,7 +61,7 @@
 <template>
   <div :style="{'width': 'fit-content'}" v-if="id">
     <h3>{{ name }}</h3>
-    <div v-if="currentFrame">
+    <template v-if="currentFrame">
       <Frame @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
       <div>
         <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
@@ -70,7 +70,7 @@
         <button @click="newFrame">+</button>
       </div>
       <Scopes @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
-    </div>
+    </template>
   </div>
   <p v-else>LOADING...</p>
 </template>
