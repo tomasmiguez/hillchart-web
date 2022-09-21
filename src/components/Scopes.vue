@@ -1,11 +1,15 @@
 <script setup>
-  import { ref, inject } from 'vue';
+  import { ref, inject, computed } from 'vue';
 
   const axios = inject('axios');
 
-  const props = defineProps(['frame', 'scopes']);
+  const props = defineProps(['currentFrameIndex', 'scopes', 'frames']);
 
   const emit = defineEmits(['hillchartModified']);
+
+  const currentFrame = computed(() => {
+    return props.frames[props.currentFrameIndex];
+  });
 
   function scopeById(id) {
     return props.scopes.find(scope => scope.id === id);
@@ -18,18 +22,19 @@
       e.preventDefault();
 
       const createScopeBody = {
-        hillchartId: props.frame.hillchartId,
+        hillchartId: currentFrame.value.hillchartId,
         color: randomHexColor()
       };
       const createScopeRes = await axios.post('/scopes', createScopeBody);
 
       const createFrameScopeBody = {
         title: newScopeTitle.value,
-        frameId: props.frame.id,
         scopeId: createScopeRes.data.data.id
       };
-      // TODO should create in every previous frame
-      await axios.post('/frame-scopes', createFrameScopeBody);
+      await Promise.all(props.frames.slice(props.currentFrameIndex, props.frames.length).map((frame) => {
+        createFrameScopeBody.frameId = frame.id;
+        return axios.post('/frame-scopes', createFrameScopeBody);
+      }));
 
       emit('hillchartModified');
 
@@ -46,7 +51,7 @@
 
 <template>
   <ul>
-    <li v-for='frameScope in frame.frameScopes'>
+    <li v-for='frameScope in currentFrame.frameScopes'>
       <p class="dot" :style="{ backgroundColor: scopeById(frameScope.scopeId).color }"></p><p style="display: inline-table; margin-left: 1em">{{ frameScope.title }}</p>
     </li>
     <li>

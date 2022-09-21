@@ -69,7 +69,7 @@
         <button :disabled="currentFrameIndex === frames.length - 1" @click="currentFrameIndex++">&gt;</button>
         <button @click="newFrame">+</button>
       </div>
-      <Scopes @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
+      <Scopes @hillchart-modified="getHillchart" :current-frame-index="currentFrameIndex" :scopes="scopes" :frames="frames" />
     </template>
   </div>
   <p v-else>LOADING...</p>
