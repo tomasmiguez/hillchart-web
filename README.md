@@ -1,15 +1,3 @@
-# hillchart-web
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
 ## Project Setup
 
 ```sh
@@ -27,3 +15,13 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### TODO
+
+- [ ] Rename frameScopes and hillcharts
+- [ ] Use uuid for hillcharts
+- [ ] Build cycle view
+- [ ] Sort scope list
+- [ ] Don't reload everything always
+- [ ] Lock previous scopes so they aren't moved accidentaly
+- [ ] Make svg reziseable
