@@ -28,6 +28,8 @@
     }
   };
 
+  const editName = ref(false);
+
   async function newFrame() {
     try {
       const tmpFrame = currentFrame.value;
@@ -51,6 +53,18 @@
     }
   };
 
+  async function toggleEditNameAndUpdate() {
+    try {
+      if(editName.value) {
+        await axios.patch(`/hillcharts/${id.value}`, { name: name.value });
+      }
+
+      editName.value = !editName.value;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   onBeforeMount(async () => {
     await getHillchart();
 
@@ -60,7 +74,10 @@
 
 <template>
   <div :style="{'width': 'fit-content'}" v-if="id">
-    <h3>{{ name }}</h3>
+    <div style="text-align: center">
+      <h3 v-if="!editName" @click="toggleEditNameAndUpdate">{{ name }}</h3>
+      <input v-else v-model="name" @keyup.enter="toggleEditNameAndUpdate">
+    </div>
     <template v-if="currentFrame">
       <Frame @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
       <div>
@@ -76,7 +93,4 @@
 </template>
 
 <style>
-  h3 {
-    text-align: center;
-  }
 </style>

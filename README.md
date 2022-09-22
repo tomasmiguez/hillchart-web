@@ -18,7 +18,8 @@ npm run build
 
 ### TODO
 
-- [ ] Rename frameScopes and hillcharts
+- [ ] Rename frameScopes
+- [X] Rename hillchart
 - [ ] Use uuid for hillcharts
 - [ ] Build cycle view
 - [ ] Sort scope list
