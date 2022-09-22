@@ -47,12 +47,26 @@
   function randomHexColor() {
     return "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
   }
+
+  async function deleteScope(scopeId) {
+    await Promise.all(props.frames.reduce((arr, frame) => {
+      const frameScope = frame.frameScopes.find((frameScope) => frameScope.scopeId === scopeId);
+      if(frameScope !== undefined) arr.push(axios.delete(`/frame-scopes/${frameScope.id}`));
+
+      return arr;
+    }, []));
+
+    await axios.delete(`/scopes/${scopeId}`);
+
+    emit('hillchartModified');
+  }
 </script>
 
 <template>
   <ul>
     <li v-for='frameScope in currentFrame.frameScopes'>
       <p class="dot" :style="{ backgroundColor: scopeById(frameScope.scopeId).color }"></p><p style="display: inline-table; margin-left: 1em">{{ frameScope.title }}</p>
+      <button @click="deleteScope(frameScope.scopeId)" style="display: inline-table; margin-left: 1em">X</button>
     </li>
     <li>
       <form id="add">
