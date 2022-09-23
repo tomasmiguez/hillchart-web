@@ -35,11 +35,9 @@
 
   async function newFrame() {
     try {
-      const tmpFrame = currentFrame.value;
-      currentFrameIndex.value = null;
       const response = await axios.post('/frames', { hillchartId: id.value });
       const newFrame = response.data.data;
-      for(const frameScope of tmpFrame.frameScopes) {
+      for(const frameScope of currentFrame.value.frameScopes) {
         const body = {
           title: frameScope.title,
           position: frameScope.position,
