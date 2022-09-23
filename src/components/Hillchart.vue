@@ -1,10 +1,13 @@
 <script setup>
   import { inject, ref, computed, watch, onBeforeMount, provide } from 'vue';
+  import { useRoute } from 'vue-router'
 
   import Frame from './Frame.vue';
   import Scopes from './Scopes.vue';
 
   const axios = inject('axios');
+
+  const route = useRoute();
 
   const scopes = ref(null);
   const frames = ref(null);
@@ -17,7 +20,7 @@
 
   async function getHillchart() {
     try {
-      const response = await axios.get('hillcharts/10')
+      const response = await axios.get(`hillcharts/${route.params.id}`)
       const hillchart = response.data.data;
       scopes.value = hillchart.scopes;
       frames.value = hillchart.frames;
@@ -64,6 +67,8 @@
       console.log(error);
     }
   };
+
+  watch(() => route.params.id, () => getHillchart());
 
   onBeforeMount(async () => {
     await getHillchart();
