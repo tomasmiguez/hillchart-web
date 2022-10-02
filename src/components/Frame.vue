@@ -6,7 +6,7 @@
 
   const axios = inject('axios');
 
-  const props = defineProps(['frame', 'scopes']);
+  const props = defineProps(['frame', 'scopes', 'preview']);
 
   const emit = defineEmits(['hillchartModified']);
 
@@ -35,7 +35,7 @@
       target: '#hillchart',
       width: 700,
       height: 270,
-      preview: false,
+      preview: props.preview,
     };
 
     svg.value.innerHTML = '';

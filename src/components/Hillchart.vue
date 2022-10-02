@@ -17,6 +17,11 @@
   const currentFrame = computed(() => {
     return currentFrameIndex.value !== null ? frames.value[currentFrameIndex.value] : null;
   });
+  const locked = ref(false);
+  const lockText = computed(() => {
+    return locked.value ?
+      'U' : 'L';
+  });
 
   async function getHillchart() {
     try {
@@ -68,6 +73,14 @@
 
   watch(() => route.params.id, () => getHillchart());
 
+  watch(() => currentFrameIndex.value, () => {
+    if(currentFrameIndex.value === frames.value.length - 1) {
+      locked.value = false;
+    } else {
+      locked.value = true;
+    }
+  });
+
   onBeforeMount(async () => {
     await getHillchart();
 
@@ -82,12 +95,13 @@
       <input v-else v-model="name" @keyup.enter="toggleEditNameAndUpdate">
     </div>
     <template v-if="currentFrame">
-      <Frame @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" />
+      <Frame @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" :preview="locked" />
       <div>
         <button :style="[currentFrameIndex === index ? {'text-decoration': 'underline', 'font-weight': 'bold'} : {}]" v-for="(frame, index) in frames" :key="frame.id" @click="currentFrameIndex=index">{{ index+1 }}</button>
         <button :disabled="currentFrameIndex === 0" @click="currentFrameIndex--">&lt;</button>
         <button :disabled="currentFrameIndex === frames.length - 1" @click="currentFrameIndex++">&gt;</button>
         <button @click="newFrame">+</button>
+        <button @click="locked = !locked">{{ lockText }}</button>
       </div>
       <Scopes @hillchart-modified="getHillchart" :current-frame-index="currentFrameIndex" :scopes="scopes" :frames="frames" />
     </template>
