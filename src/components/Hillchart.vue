@@ -93,6 +93,7 @@
     <div style="text-align: center">
       <h3 v-if="!editName" @click="toggleEditNameAndUpdate">{{ name }}</h3>
       <input v-else v-model="name" @keyup.enter="toggleEditNameAndUpdate">
+      <p v-if="currentFrame">{{ new Date(currentFrame.createdAt).toLocaleDateString() }}</p>
     </div>
     <template v-if="currentFrame">
       <Frame @hillchart-modified="getHillchart" :frame="currentFrame" :scopes="scopes" :preview="locked" />
